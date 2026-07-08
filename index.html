@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El alumno al timón · Tablero de agencia · Sesión 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,900;1,9..144,600&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --paper:#FAF7F2; --card:#fff; --ink:#0B0B0B; --terra:#C8553D; --pine:#234B3D; --ochre:#C8873D; --muted:#6f6a62; --line:rgba(11,11,11,.14); --ok:#2f7d5b; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Inter',system-ui,sans-serif; line-height:1.55; padding:26px 16px 90px; display:flex; justify-content:center; }
+  .stage{ width:100%; max-width:820px; }
+  .kick{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--pine); }
+  h1{ font-family:'Fraunces',serif; font-weight:900; font-size:clamp(30px,6vw,46px); line-height:1.02; letter-spacing:-.02em; margin:.12em 0 .1em; }
+  .lede{ font-family:'Fraunces'; font-style:italic; color:var(--muted); font-size:18px; margin:0 0 6px; }
+  .how{ font-size:14px; color:var(--muted); border-left:3px solid var(--pine); padding-left:14px; margin:14px 0 22px; }
+  h3{ font-family:'Fraunces'; font-weight:900; font-size:19px; margin:1.1em 0 .3em; color:var(--pine); }
+  p{ font-size:15.5px; } .muted{ color:var(--muted); }
+
+  .puerta{ background:var(--card); border:1px solid var(--line); border-radius:16px; margin:12px 0; overflow:hidden; box-shadow:0 1px 0 rgba(11,11,11,.03); }
+  .phead{ display:flex; align-items:center; gap:14px; padding:18px 20px; cursor:pointer; }
+  .phead:hover{ background:rgba(35,75,61,.04); }
+  .pnum{ font-family:'Fraunces'; font-weight:900; font-size:24px; color:var(--pine); width:30px; text-align:center; }
+  .ptitle{ flex:1; } .ptitle .t{ font-family:'Fraunces'; font-weight:900; font-size:19px; }
+  .ptitle .s{ font-size:13px; color:var(--muted); }
+  .chev{ font-family:'Space Mono'; color:var(--muted); font-size:20px; }
+  .pbody{ display:none; padding:2px 22px 24px; }
+  .puerta.open .pbody{ display:block; }
+  .pbody p{ font-size:15px; margin:.7em 0; }
+
+  .def{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
+  .def .c{ border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .def .c .h{ font-family:'Fraunces'; font-weight:900; font-size:16px; }
+  .def .c.si{ border-color:var(--pine); background:rgba(35,75,61,.05); } .def .c.si .h{ color:var(--pine); }
+  .def .c.no{ border-color:var(--terra); background:rgba(200,85,61,.05); } .def .c.no .h{ color:var(--terra); }
+  .def .c p{ font-size:13.5px; margin:.3em 0 0; }
+
+  .ex{ border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:10px 0; }
+  .ex .row{ display:flex; gap:10px; align-items:flex-start; margin:4px 0; font-size:14.5px; }
+  .ex .tag{ font-family:'Space Mono'; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:2px 7px; border-radius:5px; white-space:nowrap; margin-top:2px; }
+  .ex .tag.b{ background:rgba(200,85,61,.12); color:var(--terra); } .ex .tag.g{ background:rgba(35,75,61,.12); color:var(--pine); }
+  .ex .ctrl{ color:var(--terra); font-weight:600; } .ex .agen{ color:var(--pine); font-weight:600; }
+  .ex .why{ font-size:13px; color:var(--muted); margin-top:6px; }
+
+  .ladder{ margin:10px 0; }
+  .rung{ display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px dashed var(--line); }
+  .rung:last-child{ border-bottom:none; }
+  .rung .lv{ font-family:'Space Mono'; font-weight:700; font-size:12px; color:#fff; background:var(--pine); border-radius:6px; padding:3px 8px; white-space:nowrap; }
+  .rung .lv.low{ background:var(--terra); } .rung .lv.mid{ background:var(--ochre); }
+  .rung .tx{ font-size:14.5px; } .rung .tx b{ font-family:'Fraunces'; }
+
+  .step{ border-left:3px solid var(--line); padding:2px 0 2px 16px; margin:14px 0; }
+  .step .n{ font-family:'Space Mono'; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--pine); }
+  .step label{ display:block; font-weight:600; font-size:14.5px; margin:2px 0 6px; }
+  input[type=text], textarea{ width:100%; font:inherit; font-size:15px; color:var(--ink); background:#fff; border:1.5px solid var(--line); border-radius:10px; padding:10px 12px; }
+  textarea{ min-height:52px; resize:vertical; }
+  .chips{ display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+  .chip{ font:inherit; font-size:12.5px; font-weight:600; color:var(--pine); background:rgba(35,75,61,.07); border:1.5px solid transparent; border-radius:999px; padding:6px 12px; cursor:pointer; }
+  .chip:hover{ border-color:var(--pine); }
+  .built{ background:rgba(35,75,61,.06); border:1.5px solid var(--pine); border-radius:14px; padding:16px 18px; margin:16px 0 6px; }
+  .built .lab{ font-family:'Space Mono'; font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--pine); }
+  .built .obj{ font-size:15.5px; margin-top:6px; line-height:1.4; }
+  .built .obj .k{ font-family:'Fraunces'; font-weight:900; color:var(--pine); }
+  .built .obj .ph{ color:var(--muted); font-style:italic; }
+  .btn{ font-family:'Inter'; font-weight:700; font-size:14px; color:#fff; background:var(--pine); border:none; border-radius:10px; padding:10px 18px; cursor:pointer; margin-top:10px; }
+  .btn.ghost{ background:transparent; color:var(--pine); border:1.5px solid var(--pine); }
+  .btn:hover{ opacity:.92; }
+  .prac{ border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:12px 0; }
+  .prac .q{ font-family:'Fraunces'; font-weight:900; font-size:16px; color:var(--pine); }
+  .foot{ text-align:center; color:var(--muted); font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.08em; margin-top:22px; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="kick">La Copa del Aula · Sesión 4 · Study + Activate</div>
+  <h1>El alumno al timón</h1>
+  <p class="lede">Agencia no es soltar el timón. Es enseñar al alumno a tomarlo, dentro de límites que ustedes diseñan.</p>
+  <div class="how">A su ritmo o en equipo. La puerta 3 toma una tarea que hoy controla el maestro y la sube un escalón hacia la agencia, paso a paso. La puerta 4 los deja planear su primer movimiento.</div>
+
+  <!-- PUERTA 1 -->
+  <div class="puerta" id="p1">
+    <div class="phead" onclick="tog('p1')"><div class="pnum">1</div><div class="ptitle"><div class="t">Lee: qué es la agencia (y qué no)</div><div class="s">la idea que amarra los tres días</div></div><div class="chev">+</div></div>
+    <div class="pbody">
+      <p>Agencia es que el alumno tenga <strong>voz</strong>, tome <strong>decisiones</strong> y se <strong>apropie</strong> de su meta. Deja de ser pasajero del aprendizaje y toma el timón. No es un premio para los alumnos avanzados: es una forma de diseñar la clase para todos.</p>
+      <div class="def">
+        <div class="c si"><div class="h">Sí es</div><p>Libertad con estructura. Opciones reales dentro de límites claros. El maestro diseña las decisiones; no desaparece.</p></div>
+        <div class="c no"><div class="h">No es</div><p>Abandono. No es "hagan lo que quieran". Sin guía no hay agencia, hay caos, y los que ya sabían son los únicos que avanzan.</p></div>
+      </div>
+      <p>La agencia no se regala, se construye, y ya la vienen construyendo. El <strong>enganche</strong> le da una razón para entrar. El <strong>DUA</strong> le abre caminos para acceder y demostrar. El <strong>modelo de juego</strong> le da coherencia entre clases. El <strong>objetivo</strong> le da un mapa que entiende. Con esas cuatro, el alumno ya puede dirigirse.</p>
+      <p>La palabra lo dice: peda<em>gogía</em>, del griego <em>agōgē</em>, conducción. Durante siglos el que conducía era el maestro. La agencia no quita esa conducción: la comparte, poco a poco, hasta que el alumno puede conducirse solo. Ese es el objetivo final de enseñar.</p>
+      <p>Y como el compromiso, se mueve de a un escalón. No se pasa de "el maestro decide todo" a "el alumno decide todo" en un día. Se sube un peldaño: una decisión pequeña, con un límite claro, y una forma de saber si funcionó.</p>
+    </div>
+  </div>
+
+  <!-- PUERTA 2 -->
+  <div class="puerta" id="p2">
+    <div class="phead" onclick="tog('p2')"><div class="pnum">2</div><div class="ptitle"><div class="t">Mira ejemplos: controlado vs. agente</div><div class="s">la misma clase, un escalón más arriba</div></div><div class="chev">+</div></div>
+    <div class="pbody">
+      <p class="muted" style="font-size:14px">Fíjense: en la versión agente, el maestro sigue poniendo el límite. Solo mueve quién toma una decisión.</p>
+      <div id="ex-list"></div>
+    </div>
+  </div>
+
+  <!-- PUERTA 3 -->
+  <div class="puerta" id="p3">
+    <div class="phead" onclick="tog('p3')"><div class="pnum">3</div><div class="ptitle"><div class="t">Sube el escalón: rediseñen una tarea</div><div class="s">de tarea controlada a tarea con agencia</div></div><div class="chev">+</div></div>
+    <div class="pbody">
+      <div class="step">
+        <div class="n">Paso 1 · la tarea de hoy</div>
+        <label>Una tarea que ahora controlan ustedes por completo.</label>
+        <input type="text" id="a-task" placeholder="ej. Todos resuelven la misma hoja de 20 problemas" oninput="build()">
+      </div>
+      <div class="step">
+        <div class="n">Paso 2 · la decisión del alumno</div>
+        <label>¿Qué decisión, pequeña y real, puede tomar el alumno? Toquen una para empezar.</label>
+        <input type="text" id="a-dec" placeholder="ej. elegir 10 de los 20 problemas / cómo demostrar que domina el tema" oninput="build()">
+        <div class="chips" id="decchips"></div>
+      </div>
+      <div class="step">
+        <div class="n">Paso 3 · el límite (la estructura)</div>
+        <label>¿Dentro de qué límite? Aquí es donde no es abandono.</label>
+        <input type="text" id="a-lim" placeholder="ej. deben cubrir los dos tipos de problema / entregar hoy" oninput="build()">
+      </div>
+      <div class="step">
+        <div class="n">Paso 4 · la evidencia</div>
+        <label>¿Cómo van a saber que funcionó, para ellos y para ustedes?</label>
+        <input type="text" id="a-ev" placeholder="ej. cada quien justifica su elección en una frase" oninput="build()">
+      </div>
+
+      <div class="built">
+        <div class="lab">Su rediseño</div>
+        <div class="obj" id="a-obj"></div>
+      </div>
+      <button class="btn ghost" onclick="fillExample()">Ver un ejemplo armado</button>
+      <button class="btn" onclick="clearA()">Limpiar</button>
+    </div>
+  </div>
+
+  <!-- PUERTA 4 -->
+  <div class="puerta" id="p4">
+    <div class="phead" onclick="tog('p4')"><div class="pnum">4</div><div class="ptitle"><div class="t">Mi primer movimiento</div><div class="s">un solo escalón, en su salón real</div></div><div class="chev">+</div></div>
+    <div class="pbody">
+      <p class="muted" style="font-size:14px">No rediseñen todo. Elijan una de sus próximas clases y suban un escalón. Concreto y pequeño gana.</p>
+      <div class="prac">
+        <div class="q">1 · ¿En qué clase?</div>
+        <textarea placeholder="Materia, grado, el tema de esa clase"></textarea>
+      </div>
+      <div class="prac">
+        <div class="q">2 · ¿Qué decisión les voy a dar, y dentro de qué límite?</div>
+        <textarea placeholder="La decisión del alumno + el límite que la sostiene"></textarea>
+      </div>
+      <div class="prac">
+        <div class="q">3 · ¿Cómo sabré si funcionó?</div>
+        <textarea placeholder="La evidencia que voy a mirar"></textarea>
+      </div>
+      <p class="muted" style="font-size:13px;margin-top:12px">Compártanlo en su selección. Si alguien dice "eso es soltar el timón", revisen el límite del paso 2: probablemente falta.</p>
+    </div>
+  </div>
+
+  <div class="foot">Tablero de agencia · La Copa del Aula 2026</div>
+</div>
+
+<script>
+  function tog(id){ var el=document.getElementById(id); el.classList.toggle("open"); el.querySelector(".chev").textContent=el.classList.contains("open")?"–":"+"; }
+
+  // Puerta 2 examples
+  var EX=[
+    {ctrl:"El maestro asigna el tema del ensayo a todo el grupo.", agen:"El alumno elige su tema de una lista de cinco que el maestro preparó.", why:"El límite (la lista) protege la calidad. La decisión es real."},
+    {ctrl:"Todos entregan el mismo formato: un reporte escrito.", agen:"El alumno elige cómo demostrar lo que aprendió: reporte, audio o cartel.", why:"Esto es DUA y agencia a la vez: varias puertas para el mismo objetivo."},
+    {ctrl:"El maestro corrige y devuelve con la calificación.", agen:"El alumno revisa su trabajo con el criterio de éxito antes de entregar.", why:"El objetivo, dicho al final, vuelve al alumno su propio evaluador."},
+    {ctrl:"El maestro decide el orden de las actividades.", agen:"El alumno elige por dónde empezar entre tres estaciones obligatorias.", why:"Las tres son obligatorias (límite). El orden es del alumno (voz)."},
+    {ctrl:"Todos hacen los 20 problemas.", agen:"El alumno elige 10 de 20, cubriendo los dos tipos, y justifica su elección.", why:"Sube el compromiso sin bajar el rigor: el límite lo garantiza."}
+  ];
+  var el=document.getElementById("ex-list");
+  EX.forEach(function(e){
+    var d=document.createElement("div"); d.className="ex";
+    d.innerHTML="<div class='row'><span class='tag b'>Controlado</span><span class='ctrl'>"+e.ctrl+"</span></div>"+
+      "<div class='row'><span class='tag g'>Con agencia</span><span class='agen'>"+e.agen+"</span></div>"+
+      "<div class='why'>"+e.why+"</div>";
+    el.appendChild(d);
+  });
+
+  // Puerta 3 builder
+  var DECS=["qué tema, de una lista","cómo demostrarlo (formato)","por dónde empezar","con quién trabajar","cuántos, de un mínimo","qué evidencia guardar"];
+  var dc=document.getElementById("decchips");
+  DECS.forEach(function(v){
+    var b=document.createElement("button"); b.className="chip"; b.textContent=v;
+    b.onclick=function(){ document.getElementById("a-dec").value=v; build(); };
+    dc.appendChild(b);
+  });
+  function seg(id,fallback){ var t=document.getElementById(id).value.trim(); return t?("<b>"+t+"</b>"):("<span class='ph'>"+fallback+"</span>"); }
+  function build(){
+    var task=document.getElementById("a-task").value.trim();
+    var o=document.getElementById("a-obj");
+    var tk=task?("<span class='k'>"+task+"</span>"):"<span class='ph'>[la tarea]</span>";
+    o.innerHTML="En vez de "+tk+", el alumno decide <b>"+strip("a-dec","qué decisión")+"</b>, "+
+      "dentro del límite de <b>"+strip("a-lim","qué límite")+"</b>. "+
+      "Sabré que funcionó porque <b>"+strip("a-ev","qué evidencia")+"</b>.";
+  }
+  function strip(id,fb){ var t=document.getElementById(id).value.trim(); return t?t:("<span class='ph'>"+fb+"</span>"); }
+  var EXAMPLES=[
+    {task:"Todos resuelven la misma hoja de 20 problemas", dec:"cuáles 10 de los 20 resolver", lim:"deben cubrir los dos tipos de problema y entregar hoy", ev:"cada quien justifica su elección en una frase"},
+    {task:"El maestro asigna a todos el mismo tema de ensayo", dec:"su tema, de una lista de cinco", lim:"el tema debe conectar con la unidad", ev:"el borrador cumple el criterio de éxito"},
+    {task:"Todos entregan un reporte escrito", dec:"cómo demostrar lo aprendido: texto, audio o cartel", lim:"todos responden al mismo objetivo", ev:"el trabajo muestra el objetivo logrado, sea cual sea el formato"}
+  ];
+  var exi=0;
+  function fillExample(){
+    var e=EXAMPLES[exi % EXAMPLES.length]; exi++;
+    document.getElementById("a-task").value=e.task;
+    document.getElementById("a-dec").value=e.dec;
+    document.getElementById("a-lim").value=e.lim;
+    document.getElementById("a-ev").value=e.ev;
+    build();
+  }
+  function clearA(){
+    ["a-task","a-dec","a-lim","a-ev"].forEach(function(id){ document.getElementById(id).value=""; }); build();
+  }
+  build();
+</script>
+</body>
+</html>
